@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        function showTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            contents.forEach(c => c.classList.add('hidden'));
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('tab-admin');
+        });
+    </script>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a class="active">Главная</a>
+    </div>
+    <div class="navbar-right">
+        <a th:href="@{/login}">Вход</a>
+        <a th:href="@{/registration}">Регистрация</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Добро пожаловать в электронный школьный журнал!</h1>
+    <p>Это современная система для организации и ведения учебного процесса в школах.
+        Наше приложение предназначено для удобного взаимодействия между администрацией, учителями и учащимися.<br>
+        Пожалуйста, выполните вход или зарегистрируйтесь для продолжения.</p>
+
+    <div class="tabs">
+        <h2>Возможности:</h2>
+        <div class="tab-buttons">
+            <button class="tab-button" data-tab="tab-admin" onclick="showTab('tab-admin')">Для администрации</button>
+            <button class="tab-button" data-tab="tab-teacher" onclick="showTab('tab-teacher')">Для учителей</button>
+            <button class="tab-button" data-tab="tab-student" onclick="showTab('tab-student')">Для учащихся</button>
+        </div>
+
+        <div id="tab-admin" class="tab-content hidden">
+            <ul>
+                <li>Управление пользователями и ролями</li>
+                <li>Создание классов и расписаний</li>
+                <li>Просмотр аналитики по обучению</li>
+            </ul>
+        </div>
+
+        <div id="tab-teacher" class="tab-content hidden">
+            <ul>
+                <li>Заполнение электронного журнала</li>
+                <li>Добавление домашних заданий</li>
+                <li>Оценивание успеваемости</li>
+            </ul>
+        </div>
+
+        <div id="tab-student" class="tab-content hidden">
+            <ul>
+                <li>Просмотр расписания и оценок</li>
+                <li>Выполнение домашних заданий</li>
+                <li>Доступ к учебным материалам</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

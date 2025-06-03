@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Панель администратора</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+      <a th:href="@{/admin/dashboard}" class="active">Главная</a>
+      <a th:href="@{/school/info}">О школе</a>
+      <a th:href="@{/schoolclasses}">Классы</a>
+      <a th:href="@{/teachers}">Учителя</a>
+      <a th:href="@{/schedules}">Расписание</a>
+    </div>
+    <div class="navbar-right">
+      <form th:action="@{/logout}" method="post" class="logout-form">
+        <button type="submit" class="logout-button">Выход</button>
+      </form>
+    </div>
+</div>
+
+<div class="container">
+  <h1>Пользователи вашей школы</h1>
+
+  <form th:action="@{/admin/dashboard}" method="get" class="search-form">
+    <div class="search-group">
+      <input type="text" name="search" placeholder="Поиск по логину"
+             th:value="${search}" />
+      <button type="submit" class="button small primary">Найти</button>
+    </div>
+  </form>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Логин</th>
+      <th>Роль</th>
+      <th>Активен</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+      <td th:text="${user.id}">1</td>
+      <td th:text="${user.username}">логин</td>
+      <td th:text="${user.roles}">роль</td>
+      <td th:text="${user.enabled}">true</td>
+      <td>
+        <a th:href="@{/users/{id}(id=${user.id})}" class="button secondary">Просмотр</a>
+        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="button secondary">Редактировать</a>
+        <a th:if="${user.enabled}"
+           th:href="@{/users/disable/{id}(id=${user.id})}"
+           class="button danger">
+          Отключить
+        </a>
+
+        <a th:if="${!user.enabled}"
+           th:href="@{/users/enable/{id}(id=${user.id})}"
+           class="button primary">
+          Включить
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

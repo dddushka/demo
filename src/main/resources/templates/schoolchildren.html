@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список учеников</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script>
+        function toggleAddForm() {
+            const form = document.getElementById('addSchoolchildForm');
+            form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/admin/dashboard}">Главная</a>
+        <a th:href="@{/school/info}">О школе</a>
+        <a th:href="@{/schoolclasses}">Классы</a>
+        <a th:href="@{/teachers}">Учителя</a>
+        <a th:href="@{/schedules}">Расписание</a>
+    </div>
+    <div class="navbar-right">
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-button">Выход</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <h1 th:text="'Список учеников ' + ${schoolClass.gradeLevel} + ${schoolClass.letter}"></h1>
+
+    <div>
+        <button type="button" class="button primary" onclick="toggleAddForm()">Добавить ученика</button>
+    </div>
+
+    <div id="addSchoolchildForm" style="display: none;">
+        <form th:action="@{/schoolchild/add}" th:object="${newSchoolchildForm}" method="post">
+            <input type="hidden" th:field="*{schoolClassId}" th:value="${schoolClass.id}" />
+
+            <div class="form-group">
+                <label>ФИО:</label>
+                <input type="text" th:field="*{schoolchild.name}" required class="input" />
+            </div>
+
+            <div>
+                <button type="submit" class="button primary">Сохранить</button>
+                <button type="button" class="button secondary" onclick="toggleAddForm()">Отмена</button>
+            </div>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ФИО</th>
+            <th>Обучается</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="schoolchild : ${schoolchildren}">
+            <td th:text="${schoolchild.name}">ФИО</td>
+            <td th:text="${schoolchild.enabled ? 'Да' : 'Нет'}"></td>
+            <td>
+                <a th:href="@{'/schoolchild/edit/' + ${schoolchild.id}}" class="button secondary">Редактировать</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

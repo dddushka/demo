@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр пользователя</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/admin/dashboard}">Главная</a>
+        <a th:href="@{/school/info}">О школе</a>
+        <a th:href="@{/schoolclasses}">Классы</a>
+        <a th:href="@{/teachers}">Учителя</a>
+        <a th:href="@{/schedules}">Расписание</a>
+    </div>
+    <div class="navbar-right">
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-button">Выход</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Детали пользователя</h1>
+
+    <p><span class="label">ID:</span> <span th:text="${user.id}"></span></p>
+    <p><span class="label">Имя:</span> <span th:text="${user.username}"></span></p>
+    <p><span class="label">Роль:</span> <span th:text="${user.roles}"></span></p>
+
+    <div class="info-box">
+        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="button secondary">Редактировать</a>
+        <a th:href="@{/admin/dashboard}" class="button secondary">Назад к списку</a>
+    </div>
+</div>
+
+</body>
+</html>

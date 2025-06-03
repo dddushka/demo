@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Создание класса</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/admin/dashboard}">Главная</a>
+        <a th:href="@{/school/info}">О школе</a>
+        <a th:href="@{/schoolclasses}">Классы</a>
+        <a th:href="@{/teachers}">Учителя</a>
+        <a th:href="@{/schedules}">Расписание</a>
+    </div>
+    <div class="navbar-right">
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-button">Выход</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Создание нового класса</h2>
+
+    <form th:action="@{/schoolclass/create}" th:object="${schoolClass}" method="post" class="form-container">
+        <div class="form-group">
+            <label for="gradeLevel">Цифра класса:</label>
+            <input type="number" id="gradeLevel" th:field="*{gradeLevel}" />
+        </div>
+
+        <div class="form-group">
+            <label for="letter">Буква класса:</label>
+            <input type="text" id="letter" th:field="*{letter}" />
+        </div>
+
+        <button type="submit" class="button primary">Создать</button>
+    </form>
+
+</div>
+</body>
+</html>

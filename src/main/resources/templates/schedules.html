@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Расписание</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/admin/dashboard}">Главная</a>
+        <a th:href="@{/school/info}">О школе</a>
+        <a th:href="@{/schoolclasses}">Классы</a>
+        <a th:href="@{/teachers}">Учителя</a>
+        <a th:href="@{/schedules}" class="active">Расписание</a>
+    </div>
+    <div class="navbar-right">
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-button">Выход</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Расписание</h1>
+
+    <div>
+        <a th:href="@{'/lessons/generate'}" type="button" class="button primary">Сгенерировать уроки</a>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Класс</th>
+            <th>Перейти</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="schoolClass : ${schoolClasses}">
+            <td th:text="${schoolClass.gradeLevel} + ' ' + ${schoolClass.letter}">Класс</td>
+            <td>
+                <a th:href="@{'/schedule/common/' + ${schoolClass.id}}" class="button secondary">Сформировать расписание</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

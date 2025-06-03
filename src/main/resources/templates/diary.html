@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Дневник ученика</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <a th:href="@{/schoolchild/diary}" class="active">Дневник</a>
+  </div>
+  <div class="navbar-right">
+    <form th:action="@{/logout}" method="post" class="logout-form">
+      <button type="submit" class="logout-button">Выход</button>
+    </form>
+  </div>
+</div>
+
+<div class="container">
+  <h1 th:text="'Дневник ученика: ' + ${schoolchild.name}"></h1>
+
+  <h2 th:text="'Неделя: ' + ${weekStart} + ' — ' + ${weekEnd}"></h2>
+
+  <div class="week-navigation">
+    <a th:href="@{'/schoolchild/diary'(weekOffset=${weekOffset - 1})}">← Пред. неделя</a> |
+    <a th:href="@{'/schoolchild/diary'(weekOffset=${weekOffset + 1})}">След. неделя →</a>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Дата</th>
+      <th>Предмет</th>
+      <th>Д/з</th>
+      <th>Оценка</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${lessonsByDate.entrySet()}">
+      <td th:text="${entry.key}"></td>
+
+      <td>
+        <div th:each="lesson : ${entry.value}">
+          <div class="lesson-cell">
+            <span th:text="${lesson.schedule.subject.subjectName}">Предмет</span>
+          </div>
+        </div>
+      </td>
+
+      <td>
+        <div th:each="lesson : ${entry.value}">
+          <div class="lesson-cell">
+            <span th:text="${lesson.homework}">Д/з</span>
+          </div>
+        </div>
+      </td>
+
+      <td>
+        <div th:each="lesson : ${entry.value}">
+          <div class="lesson-cell">
+            <span th:if="${gradesMap[lesson.id] != null}" th:text="${gradesMap[lesson.id].value}"></span>
+            <span th:if="${gradesMap[lesson.id] == null}"></span>
+          </div>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

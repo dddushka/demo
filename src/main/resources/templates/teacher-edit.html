@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Редактировать учителя</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <a th:href="@{/admin/dashboard}">Главная</a>
+    <a th:href="@{/school/info}">О школе</a>
+    <a th:href="@{/schoolclasses}" class="active">Классы</a>
+    <a th:href="@{/teachers}">Учителя</a>
+    <a th:href="@{/schedules}">Расписание</a>
+  </div>
+  <div class="navbar-right">
+    <form th:action="@{/logout}" method="post" class="logout-form">
+      <button type="submit" class="logout-button">Выход</button>
+    </form>
+  </div>
+</div>
+
+<div class="container">
+  <h1>Редактировать учителя</h1>
+
+  <form th:action="@{/teacher/edit/{teacherId}(teacherId=${teacherEditDto.teacher.id})}"
+        method="post" th:object="${teacherEditDto.teacher}">
+
+    <div class="form-group">
+      <label for="name">ФИО:</label>
+      <input type="text" id="name" th:field="*{name}" required />
+    </div>
+
+    <div class="form-group">
+      <label>Активен:</label>
+      <select th:field="*{enabled}" class="input">
+        <option th:value="true">Да</option>
+        <option th:value="false">Нет</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="user">Привязанный пользователь:</label>
+      <select id="user" th:field="*{user.id}">
+        <option th:each="user : ${teacherEditDto.availableUsers}"
+                th:value="${user.id}"
+                th:text="${user.username}">
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="subjects">Предметы:</label>
+      <select id="subjects" th:field="*{subjects}" multiple>
+        <option th:each="subject : ${teacherEditDto.allSubjects}"
+                th:value="${subject.id}"
+                th:text="${subject.subjectName}">
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" class="button primary">Сохранить</button>
+    <a th:href="@{/teachers}" class="button secondary">Отмена</a>
+  </form>
+
+
+
+</div>
+
+</body>
+</html>

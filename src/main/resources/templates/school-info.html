@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>О школе</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/admin/dashboard}">Главная</a>
+        <a th:href="@{/school/info}" class="active">О школе</a>
+        <a th:href="@{/schoolclasses}">Классы</a>
+        <a th:href="@{/teachers}">Учителя</a>
+        <a th:href="@{/schedules}">Расписание</a>
+    </div>
+  <div class="navbar-right">
+    <form th:action="@{/logout}" method="post" class="logout-form">
+      <button type="submit" class="logout-button">Выход</button>
+    </form>
+  </div>
+</div>
+
+<div class="container">
+    <h1 th:text="'О школе: ' + ${school.title}">Название школы</h1>
+
+    <div class="info-box" th:if="${not editing}">
+        <p><span class="label">Адрес:</span> <span th:text="${school.address}"></span></p>
+        <p><span class="label">Телефон:</span> <span th:text="${school.phone}"></span></p>
+        <p><span class="label">Электронная почта:</span> <span th:text="${school.email}"></span></p>
+        <p><span class="label">Директор:</span> <span th:text="${school.directorName}"></span></p>
+
+        <form th:if="${isAdmin}" th:action="@{/school/info/edit}" method="get">
+            <button type="submit" class="button secondary">Редактировать</button>
+        </form>
+    </div>
+
+    <form th:if="${editing}" th:action="@{/school/info/update}" method="post" th:object="${school}">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="form-group">
+            <label>Название школы</label>
+            <input type="text" th:field="*{title}" />
+        </div>
+        <div class="form-group">
+            <label>Адрес</label>
+            <input type="text" th:field="*{address}" />
+        </div>
+        <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" th:field="*{phone}" />
+        </div>
+        <div class="form-group">
+            <label>Электронная почта</label>
+            <input type="email" th:field="*{email}" />
+        </div>
+        <div class="form-group">
+            <label>Директор</label>
+            <input type="text" th:field="*{directorName}" />
+        </div>
+        <button type="submit" class="button primary">Сохранить</button>
+    </form>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.dto.ScheduleDto;
+import com.example.demo.dto.mapper.ScheduleMapper;
+import com.example.demo.model.entity.*;
+import com.example.demo.model.repository.LessonRepository;
+import com.example.demo.model.repository.ScheduleRepository;
+import com.example.demo.service.ScheduleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.time.DayOfWeek;
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class ScheduleServiceImpl implements ScheduleService {
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleMapper scheduleMapper;
+
+    @Override
+    public Optional<Schedule> findById(Integer id) {
+        return scheduleRepository.findById(id);
+    }
+
+    @Override
+    public Map<Subject, List<SchoolClass>> getSubjectsAndSchoolClassesByTeacher(Teacher teacher) {
+        List<Schedule> schedules = scheduleRepository.findByTeacher(teacher);
+
+        Map<Subject, List<SchoolClass>> map = new HashMap<>();
+        for (Schedule schedule : schedules) {
+            Subject subject = schedule.getSubject();
+            SchoolClass schoolClass = schedule.getSchoolClass();
+
+            List<SchoolClass> classes = map.computeIfAbsent(subject, k -> new ArrayList<>());
+            if (!classes.contains(schoolClass)) {
+                classes.add(schoolClass);
+            }
+        }
+
+        return map;
+    }
+
+    @Override
+    public List<Schedule> findByTeacherAndSubjectAndSchoolClass(Teacher teacher, Subject subject, SchoolClass schoolClass) {
+        return scheduleRepository.findByTeacherAndSubjectAndSchoolClass(teacher, subject, schoolClass);
+    }
+
+    @Override
+    public List<Schedule> findBySchoolClass(SchoolClass schoolClass) {
+        return scheduleRepository.findBySchoolClass(schoolClass);
+    }
+
+    @Override
+    public void save(Schedule schedule) {
+        scheduleRepository.save(schedule);
+    }
+
+    @Override
+    public void update(Integer id, Schedule newSchedule) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Занятие не найдено"));
+
+        schedule.setDayOfWeek(newSchedule.getDayOfWeek());
+        schedule.setLessonNumber(newSchedule.getLessonNumber());
+        schedule.setClassroom(newSchedule.getClassroom());
+        schedule.setSubject(newSchedule.getSubject());
+        schedule.setTeacher(newSchedule.getTeacher());
+
+        scheduleRepository.save(schedule);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        scheduleRepository.deleteById(id);
+    }
+
+    @Override
+    public Map<String, List<ScheduleDto>> getGroupedSchedulesBySchoolClass(SchoolClass schoolClass) {
+        List<Schedule> schedules = scheduleRepository.findBySchoolClass(schoolClass);
+
+        Map<String, List<ScheduleDto>> grouped = new LinkedHashMap<>();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            grouped.put(day.name(), new ArrayList<>());
+        }
+        for (Schedule schedule : schedules) {
+            grouped.get(schedule.getDayOfWeek().name()).add(scheduleMapper.toDto(schedule));
+        }
+        return grouped;
+    }
+
+}

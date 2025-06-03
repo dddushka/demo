@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Журнал</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/teacher/dashboard}">Панель учителя</a>
+    </div>
+    <div class="navbar-right">
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-button">Выход</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+
+<h1 th:text="'Журнал по предмету: ' + ${subject.subjectName} + ' / Класс: ' + ${schoolClass.gradeLevel} + ' ' + ${schoolClass.letter}"></h1>
+
+    <form th:action="@{/journal/{schoolClassId}/{subjectId}/save(schoolClassId=${schoolClassId}, subjectId=${subjectId})}" method="post">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th th:each="lesson : ${lessons}" th:text="${lesson.date}"></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th th:each="lesson : ${lessons}">
+                    <div>
+                        <button type="button" class="button small primary"
+                                th:attr="data-id=${lesson.id}, data-value=${lesson.topic}"
+                                onclick="getEditField('topic', this)">
+                            Тема
+                        </button>
+                        <span th:id="'topic-' + ${lesson.id}" class="edit-container"></span>
+                    </div>
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="schoolchild : ${schoolchildren}"
+                th:attr="data-schoolchild-id=${schoolchild.id}">
+                <td th:text="${schoolchild.name}"></td>
+                <td th:each="lesson : ${lessons}">
+                    <input type="text"
+                           th:name="'grades[' + ${schoolchild.id} + '][' + ${lesson.id} + ']'"
+                           th:value="${grades[schoolchild.id][lesson.id]}" />
+                </td>
+            </tr>
+            </tbody>
+
+            <tfoot>
+            <tr>
+                <td></td>
+                <td th:each="lesson : ${lessons}">
+                    <div>
+                        <button type="button" class="button small primary"
+                                th:attr="data-id=${lesson.id}, data-value=${lesson.homework}"
+                                onclick="getEditField('homework', this)">
+                            Д/з
+                        </button>
+                        <span th:id="'homework-' + ${lesson.id}" class="edit-container"></span>
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div id="edit-popup" class="edit-popup" style="display: none;">
+        <input type="text" id="edit-input" style="width: 200px;" />
+        <div style="margin-top: 8px; text-align: right;">
+            <button type="button" class="button primary" onclick="saveEdit()">Сохранить</button>
+            <button type="button" class="button secondary" onclick="closeEdit()">Отмена</button>
+        </div>
+    </div>
+
+    <input type="hidden" th:name="classId" th:value="${schoolClass.id}" />
+    <input type="hidden" th:name="subjectId" th:value="${subject.id}" />
+
+    <button type="submit" class="button primary">Сохранить</button>
+    </form>
+
+    <a th:href="@{/teacher/dashboard}" type="button" class="button secondary">Назад</a>
+
+</div>
+
+<script>
+    let currentEdit = {
+        type: null,
+        lessonId: null,
+        popupElement: document.getElementById('edit-popup'),
+        sourceButton: null
+    };
+
+    function getEditField(type, button) {
+        const lessonId = button.dataset.id;
+        const value = button.dataset.value || '';
+        const popup = currentEdit.popupElement;
+        const input = document.getElementById('edit-input');
+
+        currentEdit.type = type;
+        currentEdit.lessonId = lessonId;
+        currentEdit.sourceButton = button;
+
+        input.value = value;
+
+        const rect = button.getBoundingClientRect();
+        popup.style.top = window.scrollY + rect.bottom + 'px';
+        popup.style.left = window.scrollX + rect.left + 'px';
+
+        popup.style.display = 'block';
+        input.focus();
+    }
+
+    function closeEdit() {
+        currentEdit.popupElement.style.display = 'none';
+        currentEdit.type = null;
+        currentEdit.lessonId = null;
+    }
+
+    function saveEdit() {
+        const newValue = document.getElementById('edit-input').value;
+        const type = currentEdit.type;
+        const lessonId = currentEdit.lessonId;
+
+        let container = document.getElementById(type + '-' + lessonId);
+        if (!container) {
+            container = document.createElement('span');
+            container.id = type + '-' + lessonId;
+            document.body.appendChild(container);
+        }
+
+        container.innerHTML = `<input type="hidden" name="${type}s[${lessonId}]" value="${newValue}" />`;
+        currentEdit.sourceButton.dataset.value = newValue;
+
+        closeEdit();
+    }
+
+</script>
+</body>
+</html>

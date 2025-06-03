@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список классов</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <a th:href="@{/admin/dashboard}">Главная</a>
+    <a th:href="@{/school/info}">О школе</a>
+    <a th:href="@{/schoolclasses}" class="active">Классы</a>
+    <a th:href="@{/teachers}">Учителя</a>
+    <a th:href="@{/schedules}">Расписание</a>
+  </div>
+  <div class="navbar-right">
+    <form th:action="@{/logout}" method="post" class="logout-form">
+      <button type="submit" class="logout-button">Выход</button>
+    </form>
+  </div>
+</div>
+
+<div class="container">
+  <h1>Список классов</h1>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <a th:href="@{/schoolclass/create}" class="button primary">Создать новый класс</a>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Класс</th>
+      <th>Включен</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="schoolClass : ${schoolClasses}">
+      <td th:text="${schoolClass.gradeLevel + ' ' + schoolClass.letter}">1 А</td>
+      <td th:text="${schoolClass.enabled}">-</td>
+      <td>
+        <a th:href="@{'/schoolchildren/' + ${schoolClass.id}}" class="button secondary">Ученики</a>
+        <a th:href="@{'/schoolclass/edit/' + ${schoolClass.id}}" class="button secondary">Редактировать</a>
+        <a th:if="${schoolClass.enabled}"
+           th:href="@{'/schoolclass/disable/' + ${schoolClass.id}}"
+           class="button danger">
+          Архивировать
+        </a>
+
+        <a th:if="${!schoolClass.enabled}"
+           th:href="@{'/schoolclass/enable/' + ${schoolClass.id}}"
+           class="button primary">
+          Разархивировать
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

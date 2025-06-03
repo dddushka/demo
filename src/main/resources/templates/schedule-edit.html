@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Редактировать занятие</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <a th:href="@{/admin/dashboard}">Главная</a>
+    <a th:href="@{/school/info}">О школе</a>
+    <a th:href="@{/schoolclasses}">Классы</a>
+    <a th:href="@{/teachers}">Учителя</a>
+    <a th:href="@{/schedules}">Расписание</a>
+  </div>
+  <div class="navbar-right">
+    <form th:action="@{/logout}" method="post" class="logout-form">
+      <button type="submit" class="logout-button">Выход</button>
+    </form>
+  </div>
+</div>
+
+<div class="container">
+  <h2>Редактировать занятие</h2>
+
+  <form th:action="@{'/schedule/common/' + ${scheduleForm.id} + '/edit'}" method="post" th:object="${scheduleForm}">
+    <div class="form-group">
+      <label for="dayOfWeek">День недели</label>
+      <select id="dayOfWeek" th:field="*{dayOfWeek}">
+        <option value="">--Выберите--</option>
+        <option th:each="day : ${dayOfWeek}" th:value="${day}" th:text="${day}"></option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="lessonNumber">Номер урока</label>
+      <input type="number" id="lessonNumber" th:field="*{lessonNumber}" min="1" />
+    </div>
+
+    <div class="form-group">
+      <label for="classroom">Кабинет</label>
+      <input type="number" id="classroom" th:field="*{classroom}" />
+    </div>
+
+    <div class="form-group">
+      <label for="subject">Предмет</label>
+      <select id="subject" th:field="*{subjectId}">
+        <option value="">--Выберите--</option>
+        <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.subjectName}"></option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="teacher">Учитель</label>
+      <select id="teacher" th:field="*{teacherId}">
+        <option value="">--Выберите--</option>
+        <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.name}"></option>
+      </select>
+    </div>
+
+    <button type="submit" class="button primary">Сохранить</button>
+    <a th:href="@{'/schedule/common/' + ${schoolClassId}}" class="button secondary">Отмена</a>
+  </form>
+</div>
+
+</body>
+</html>

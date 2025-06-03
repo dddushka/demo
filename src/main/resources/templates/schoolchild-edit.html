@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Страница ученика</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/admin/dashboard}">Главная</a>
+        <a th:href="@{/school/info}">О школе</a>
+        <a th:href="@{/schoolclasses}">Классы</a>
+        <a th:href="@{/teachers}">Учителя</a>
+        <a th:href="@{/schedules}">Расписание</a>
+    </div>
+    <div class="navbar-right">
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-button">Выход</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <h1 th:text="${schoolchild.name}"></h1>
+
+    <form th:action="@{/schoolchild/edit/{id}(id=${schoolchild.id})}" method="post" class="form-container"  th:object="${schoolchild}">
+
+        <div class="form-group">
+            <label>ФИО:</label>
+            <input type="text" th:field="*{name}" class="input"/>
+        </div>
+
+        <div class="form-group">
+            <label>Класс:</label>
+            <select th:field="*{schoolClasses[0]}" class="input">
+                <option th:each="cls : ${allClasses}"
+                        th:value="${cls.id}"
+                        th:text="${cls.gradeLevel + cls.letter}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Обучается:</label>
+            <select th:field="*{enabled}" class="input">
+                <option th:value="true" th:text="'Обучается'"></option>
+                <option th:value="false" th:text="'Выбыл'"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Привязать к пользователю:</label>
+            <select th:field="*{user}" class="input">
+                <option th:each="usr : ${allUsers}"
+                        th:value="${usr.id}"
+                        th:text="${usr.username}">
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="button primary">Сохранить</button>
+    </form>
+
+</div>
+
+</body>
+
+</html>
