@@ -24,6 +24,7 @@ public class LessonController {
     private final SchoolClassService schoolClassService;
     private final SchoolClassMapper schoolClassMapper;
 
+    //get request to lesson generator
     @GetMapping("/lessons/generate")
     public String showLessonGenerationForm(@AuthenticationPrincipal User user, Model model) {
         List<SchoolClass> schoolClasses = schoolClassService.findBySchool(user.getSchool());
@@ -32,6 +33,7 @@ public class LessonController {
         return "lesson-generator";
     }
 
+    //post request to generate lessons
     @PostMapping("/lessons/generate")
     public String generateLessons(@RequestParam Integer classId,
                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,

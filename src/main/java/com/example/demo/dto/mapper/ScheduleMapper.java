@@ -5,7 +5,6 @@ import com.example.demo.model.entity.Schedule;
 import com.example.demo.model.entity.SchoolClass;
 import com.example.demo.model.entity.Subject;
 import com.example.demo.model.entity.Teacher;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 

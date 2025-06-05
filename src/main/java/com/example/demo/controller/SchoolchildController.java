@@ -24,6 +24,7 @@ public class SchoolchildController {
     private final SchoolchildMapper schoolchildMapper;
     private final SchoolClassMapper schoolClassMapper;
 
+    //get request to page with list schoolchildren in school class
     @GetMapping(value="/schoolchildren/{schoolClassId}")
     public String getSchoolchildrenForSchoolClass(@PathVariable Integer schoolClassId, Model model) {
         SchoolClass schoolClass = schoolClassService.findById(schoolClassId).orElseThrow();
@@ -40,10 +41,11 @@ public class SchoolchildController {
         return "schoolchildren";
     }
 
+    //post request to add schoolchild in school class
     @PostMapping("/schoolchild/add")
     public String addSchoolchild(@ModelAttribute @Valid SchoolchildFormDto formDto,
                                  BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //dto validation
             return "schoolchildren";
         }
 
@@ -57,6 +59,7 @@ public class SchoolchildController {
         return "redirect:/schoolchildren/" + formDto.getSchoolClassId();
     }
 
+    //get request to schoolchild change page
     @GetMapping("/schoolchild/edit/{schoolchildId}")
     public String editSchoolchild(@PathVariable Integer schoolchildId,
                                   Model model,
@@ -77,11 +80,12 @@ public class SchoolchildController {
         return "schoolchild-edit";
     }
 
+    //post request to save schoolchild changes
     @PostMapping("/schoolchild/edit/{schoolchildId}")
     public String editSchoolchild(@PathVariable Integer schoolchildId,
                                   @ModelAttribute @Valid SchoolchildEditDto schoolchildEditDto,
                                   BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //dto validation
             return "schoolchild-edit";
         }
 
@@ -90,6 +94,7 @@ public class SchoolchildController {
         return "redirect:/schoolchildren/" + schoolchild.getSchoolClasses().getFirst().getId();
     }
 
+    //get request to schoolchild diary page
     @GetMapping("/schoolchild/diary")
     public String getSchoolchildDiary(Model model,
                                       @AuthenticationPrincipal User user,

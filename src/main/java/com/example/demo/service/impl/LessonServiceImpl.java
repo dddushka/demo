@@ -33,14 +33,16 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public void generateLessonsFromSchedule(Integer classId, LocalDate startDate, LocalDate endDate) {
+        //search schedules by school class
         List<Schedule> schedules = scheduleRepository.findBySchoolClassId(classId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<Lesson> lessons = new ArrayList<>();
-
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            //set day of week
             DayOfWeek currentDay = date.getDayOfWeek();
 
+            //fill lessons by schedule
             for (Schedule schedule : schedules) {
                 if (schedule.getDayOfWeek() == currentDay) {
                     Lesson lesson = new Lesson();

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Integer> {
-    List<SchoolClass> findBySchool(School school);
+    List<SchoolClass> findBySchoolOrderByGradeLevelAscLetterAsc(School school);
 }

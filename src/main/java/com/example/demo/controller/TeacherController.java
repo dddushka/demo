@@ -5,7 +5,6 @@ import com.example.demo.dto.SubjectDto;
 import com.example.demo.dto.TeacherDto;
 import com.example.demo.dto.TeacherEditDto;
 import com.example.demo.dto.mapper.TeacherMapper;
-import com.example.demo.model.entity.SchoolClass;
 import com.example.demo.model.entity.Subject;
 import com.example.demo.model.entity.Teacher;
 import com.example.demo.model.entity.User;
@@ -36,6 +35,7 @@ public class TeacherController {
     private final SubjectService subjectService;
     private final TeacherMapper teacherMapper;
 
+    //get request to list of teachers page
     @GetMapping("/teachers")
     public String getTeachers(Model model, @AuthenticationPrincipal User user) {
         List<Teacher> teachers = teacherService.findBySchool(user.getSchool());
@@ -47,12 +47,7 @@ public class TeacherController {
         return "teachers";
     }
 
-    @PostMapping("/teacher/add")
-    public String addTeacher(@ModelAttribute("newTeacher") @Valid Teacher newTeacher) {
-        //teacherService.save(newTeacher);
-        return "redirect:/teachers";
-    }
-
+    //get request to teacher edit form
     @GetMapping("/teacher/edit/{teacherId}")
     public String editTeacher(@AuthenticationPrincipal User user, Model model, @PathVariable Integer teacherId) {
         Optional<Teacher> teacherOpt = teacherService.findById(teacherId);
@@ -75,11 +70,12 @@ public class TeacherController {
         }
     }
 
+    //post request to save teacher changes
     @PostMapping("/teacher/edit/{teacherId}")
     public String editTeacher(@PathVariable Integer teacherId,
                               @ModelAttribute @Valid TeacherEditDto teacherEditDto,
                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //dto validation
             return "teacher-edit";
         }
 
@@ -88,6 +84,7 @@ public class TeacherController {
         return "redirect:/teachers";
     }
 
+    //get request to teacher main page
     @GetMapping("/teacher/dashboard")
     public String getTeacherDashboard(Model model, @AuthenticationPrincipal User user) {
         Optional<Teacher> teacherOpt = teacherService.findByUser(user);

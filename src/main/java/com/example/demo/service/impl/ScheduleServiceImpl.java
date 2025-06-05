@@ -6,12 +6,13 @@ import com.example.demo.dto.SubjectDto;
 import com.example.demo.dto.mapper.ScheduleMapper;
 import com.example.demo.dto.mapper.SchoolClassMapper;
 import com.example.demo.dto.mapper.SubjectMapper;
-import com.example.demo.model.entity.*;
-import com.example.demo.model.repository.LessonRepository;
+import com.example.demo.model.entity.Schedule;
+import com.example.demo.model.entity.SchoolClass;
+import com.example.demo.model.entity.Subject;
+import com.example.demo.model.entity.Teacher;
 import com.example.demo.model.repository.ScheduleRepository;
 import com.example.demo.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -30,11 +31,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.findById(id);
     }
 
+    //grouped school classes by subject
     @Override
     public Map<SubjectDto, List<SchoolClassDto>> getSubjectsAndSchoolClassesByTeacher(Teacher teacher) {
         List<Schedule> schedules = scheduleRepository.findByTeacher(teacher);
         Map<SubjectDto, List<SchoolClassDto>> map = new HashMap<>();
-
         for (Schedule schedule : schedules) {
             SubjectDto subjectDto = subjectMapper.toDto(schedule.getSubject());
             SchoolClassDto schoolClassDto = schoolClassMapper.toDto(schedule.getSchoolClass());
@@ -82,6 +83,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduleRepository.deleteById(id);
     }
 
+    //grouped schedule by day of week
     @Override
     public Map<String, List<ScheduleDto>> getGroupedSchedulesBySchoolClass(SchoolClass schoolClass) {
         List<Schedule> schedules = scheduleRepository.findBySchoolClass(schoolClass);

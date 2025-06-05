@@ -36,6 +36,7 @@ public class JournalServiceImpl implements JournalService {
 
         List<Lesson> lessons = lessonService.findBySchedule(schedule);
 
+        //map by schoolchildId and map by lessonId, grades
         Map<Integer, Map<Integer, Integer>> grades = new HashMap<>();
         for (Schoolchild schoolchild : schoolchildren) {
             Map<Integer, Integer> lessonGrades = new HashMap<>();
@@ -64,6 +65,7 @@ public class JournalServiceImpl implements JournalService {
         if (homeworks == null) homeworks = Collections.emptyMap();
         if (grades == null) grades = Collections.emptyMap();
 
+        //update topic by lessonId
         for (Map.Entry<Integer, String> entry : topics.entrySet()) {
             Integer lessonId = entry.getKey();
             String topic = entry.getValue();
@@ -74,6 +76,7 @@ public class JournalServiceImpl implements JournalService {
             });
         }
 
+        //update homework by lessonId
         for (Map.Entry<Integer, String> entry : homeworks.entrySet()) {
             Integer lessonId = entry.getKey();
             String homework = entry.getValue();
@@ -84,6 +87,7 @@ public class JournalServiceImpl implements JournalService {
             });
         }
 
+        //update grades by lessonId by schoolchildId
         for (Map.Entry<Integer, Map<Integer, String>> schoolchildEntry : grades.entrySet()) {
             Integer schoolchildId = schoolchildEntry.getKey();
             Map<Integer, String> lessonGrades = schoolchildEntry.getValue();

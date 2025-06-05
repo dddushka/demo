@@ -23,23 +23,28 @@ public class DiaryServiceImpl implements DiaryService {
     private final GradeService gradeService;
     private final DiaryMapper diaryMapper;
 
+    //filling out a diary
+    @Override
     public DiaryDataDto getDiaryData(User user, Integer weekOffset) {
+        //search schoolchild by user
         Schoolchild schoolchild = schoolchildService.findByUser(user).orElseThrow(() -> new RuntimeException("Schoolchild not found"));
 
+        //set school class
         List<SchoolClass> schoolClasses = schoolchild.getSchoolClasses();
-        SchoolClass schoolClass = schoolClasses.get(0);
-        List<Lesson> allLessons = lessonService.findBySchoolClass(schoolClass);
+        SchoolClass schoolClass = schoolClasses.getFirst();
 
+        //set lessons by date
+        List<Lesson> allLessons = lessonService.findBySchoolClass(schoolClass);
         Map<LocalDate, List<Lesson>> lessonsByDate = new HashMap<>();
         for (Lesson lesson : allLessons) {
             LocalDate date = LocalDate.parse(lesson.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             lessonsByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(lesson);
         }
 
+        //pagination by weeks
         LocalDate today = LocalDate.now().plusWeeks(weekOffset);
         LocalDate weekStart = today.with(DayOfWeek.MONDAY);
         LocalDate weekEnd = today.with(DayOfWeek.SUNDAY);
-
         Map<LocalDate, List<Lesson>> currentWeekLessons = new TreeMap<>();
         for (Map.Entry<LocalDate, List<Lesson>> entry : lessonsByDate.entrySet()) {
             if (!entry.getKey().isBefore(weekStart) && !entry.getKey().isAfter(weekEnd)) {
@@ -47,6 +52,7 @@ public class DiaryServiceImpl implements DiaryService {
             }
         }
 
+        //set grades
         List<Grade> grades = gradeService.findBySchoolchild(schoolchild);
         Map<Integer, Grade> gradesMap = new HashMap<>();
         for (Grade grade : grades) {

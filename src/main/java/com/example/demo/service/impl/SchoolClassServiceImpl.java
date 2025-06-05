@@ -2,7 +2,6 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.entity.School;
 import com.example.demo.model.entity.SchoolClass;
-import com.example.demo.model.entity.Schoolchild;
 import com.example.demo.model.repository.SchoolClassRepository;
 import com.example.demo.service.SchoolClassService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class SchoolClassServiceImpl implements SchoolClassService {
 
     @Override
     public List<SchoolClass> findBySchool(School school) {
-        return schoolClassRepository.findBySchool(school);
+        return schoolClassRepository.findBySchoolOrderByGradeLevelAscLetterAsc(school);
     }
 
     @Override

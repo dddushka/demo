@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class JournalController {
     private final JournalService journalService;
 
+    //get request to journal page
     @GetMapping("/journal/{schoolClassId}/{subjectId}")
     public String getJournal(@PathVariable Integer schoolClassId,
                              @PathVariable Integer subjectId,
@@ -41,12 +42,13 @@ public class JournalController {
         }
     }
 
+    //post request to save journal changes
     @PostMapping("/journal/{schoolClassId}/{subjectId}/save")
     public String saveJournal(@ModelAttribute @Valid JournalSaveDto dto,
                               BindingResult bindingResult,
                               @PathVariable Integer schoolClassId,
                               @PathVariable Integer subjectId){
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //dto validation
             return "journal";
         }
         journalService.processAndSaveJournal(dto, schoolClassId, subjectId);

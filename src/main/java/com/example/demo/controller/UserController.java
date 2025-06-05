@@ -23,17 +23,19 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
+    //get request to show registration form
     @GetMapping("/registration")
     public String getRegistrationForm(Model model) {
         model.addAttribute("user", new UserRegistrationDto());
         return "registration";
     }
 
+    //post request to save registered user
     @PostMapping("/registration")
     public String registration(@ModelAttribute @Valid UserRegistrationDto dto,
                                BindingResult bindingResult,
                                Model model) {
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //dto validation
             return "registration";
         }
 
@@ -47,11 +49,13 @@ public class UserController {
         }
     }
 
+    //get request to show login page
     @GetMapping("/login")
     public String getAuthorizationForm() {
         return "login";
     }
 
+    //get request to redirect users based on role
     @GetMapping("/post_login")
     public String redirectAfterLogin(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -78,6 +82,7 @@ public class UserController {
         }
     }
 
+    //get request to user information page
     @GetMapping("/users/{id}")
     public String getUserById(@PathVariable Integer id, Model model) {
         Optional<User> user = userService.findById(id);
@@ -91,6 +96,7 @@ public class UserController {
         }
     }
 
+    //get request to user edit page
     @GetMapping("/users/edit/{id}")
     public String editUserForm(@PathVariable Integer id, Model model) {
         Optional<User> user = userService.findById(id);
@@ -105,18 +111,21 @@ public class UserController {
         }
     }
 
+    //post request to save user changes
     @PostMapping("/users/edit/{id}")
     public String editUser(@PathVariable Integer id, @RequestParam("role") Role role) {
         userService.update(id, role);
         return "redirect:/admin/dashboard";
     }
 
+    //get request to enable
     @GetMapping("/users/enable/{id}")
     public String enableUser(@PathVariable Integer id) {
         userService.enable(id);
         return "redirect:/admin/dashboard";
     }
 
+    //get request to disable
     @GetMapping("/users/disable/{id}")
     public String disableUser(@PathVariable Integer id) {
         userService.disable(id);
