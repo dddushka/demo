@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Расписание класса</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
 </head>
 <body>
 
@@ -45,9 +45,13 @@
                 <td th:text="${schedule.subjectName}"></td>
                 <td th:text="${schedule.teacherName}"></td>
                 <td>
-                    <a th:href="@{'/schedule/common/' + ${schedule.id} + '/edit'}" class="button small primary">Изменить</a>
-                    <form th:action="@{'/schedule/common/' + ${schedule.id} + '/delete'}" method="post" style="display:inline;">
-                        <button type="submit" class="button small danger" onclick="return confirm('Удалить запись?')">Удалить</button>
+                    <a th:href="@{'/schedule/common/' + ${schedule.id} + '/edit'}"
+                       class="button small primary">Изменить</a>
+                    <form th:action="@{'/schedule/common/' + ${schedule.id} + '/delete'}" method="post"
+                          style="display:inline;">
+                        <button type="submit" class="button small danger" onclick="return confirm('Удалить запись?')">
+                            Удалить
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -57,10 +61,17 @@
 
     <div class="form-container">
         <h3>Добавить занятие</h3>
-        <form th:action="@{'/schedule/common/' + ${schoolClass.id} + '/save'}" method="post" th:object="${scheduleForm}">
+        <form th:action="@{'/schedule/common/' + ${schoolClass.id} + '/save'}" method="post"
+              th:object="${scheduleForm}">
+            <div th:if="${#fields.hasErrors('*')}" class="error">
+                <ul>
+                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+
             <div class="form-group">
                 <label for="dayOfWeek">День недели</label>
-                <select id="dayOfWeek" th:field="*{dayOfWeek}">
+                <select id="dayOfWeek" th:field="*{dayOfWeek}" required>
                     <option value="">--Выберите--</option>
                     <option th:each="day : ${dayOfWeek}" th:value="${day}" th:text="${day}"></option>
                 </select>
@@ -68,25 +79,26 @@
 
             <div class="form-group">
                 <label for="lessonNumber">Номер урока</label>
-                <input type="number" id="lessonNumber" th:field="*{lessonNumber}" min="1" />
+                <input type="number" id="lessonNumber" th:field="*{lessonNumber}" min="1" max="8" required/>
             </div>
 
             <div class="form-group">
                 <label for="classroom">Кабинет</label>
-                <input type="number" id="classroom" th:field="*{classroom}" />
+                <input type="number" id="classroom" th:field="*{classroom}" min="1" required/>
             </div>
 
             <div class="form-group">
                 <label for="subjectId">Предмет</label>
-                <select id="subjectId" th:field="*{subjectId}">
+                <select id="subjectId" th:field="*{subjectId}" required>
                     <option value="">--Выберите--</option>
-                    <option th:each="subject : ${subjects}" th:value="${subject.id}" th:text="${subject.subjectName}"></option>
+                    <option th:each="subject : ${subjects}" th:value="${subject.id}"
+                            th:text="${subject.subjectName}"></option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="teacherId">Учитель</label>
-                <select id="teacherId" th:field="*{teacherId}">
+                <select id="teacherId" th:field="*{teacherId}" required>
                     <option value="">--Выберите--</option>
                     <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.name}"></option>
                 </select>

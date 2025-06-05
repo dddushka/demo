@@ -8,12 +8,20 @@
 <body>
 
 <div class="navbar">
-    <div class="navbar-left">
+    <div th:if="${role == 'ROLE_ADMIN'}" class="navbar-left">
         <a th:href="@{/admin/dashboard}">Главная</a>
         <a th:href="@{/school/info}" class="active">О школе</a>
         <a th:href="@{/schoolclasses}">Классы</a>
         <a th:href="@{/teachers}">Учителя</a>
         <a th:href="@{/schedules}">Расписание</a>
+    </div>
+    <div th:if="${role == 'ROLE_TEACHER'}" class="navbar-left">
+        <a th:href="@{/teacher/dashboard}">Главная</a>
+        <a th:href="@{/school/info}" class="active">О школе</a>
+    </div>
+    <div th:if="${role == 'ROLE_SCHOOLCHILD'}" class="navbar-left">
+        <a th:href="@{/schoolchild/diary}">Главная</a>
+        <a th:href="@{/school/info}" class="active">О школе</a>
     </div>
   <div class="navbar-right">
     <form th:action="@{/logout}" method="post" class="logout-form">
@@ -23,6 +31,11 @@
 </div>
 
 <div class="container">
+
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+
     <h1 th:text="'О школе: ' + ${school.title}">Название школы</h1>
 
     <div class="info-box" th:if="${not editing}">
@@ -31,33 +44,39 @@
         <p><span class="label">Электронная почта:</span> <span th:text="${school.email}"></span></p>
         <p><span class="label">Директор:</span> <span th:text="${school.directorName}"></span></p>
 
-        <form th:if="${isAdmin}" th:action="@{/school/info/edit}" method="get">
+        <form th:if="${role == 'ROLE_ADMIN'}" th:action="@{/school/info/edit}" method="get">
             <button type="submit" class="button secondary">Редактировать</button>
         </form>
     </div>
 
     <form th:if="${editing}" th:action="@{/school/info/update}" method="post" th:object="${school}">
-        <input type="hidden" th:field="*{id}" />
+        <div th:if="${#fields.hasErrors('*')}" class="error">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <input type="hidden" th:field="*{id}">
 
         <div class="form-group">
             <label>Название школы</label>
-            <input type="text" th:field="*{title}" />
+            <input type="text" th:field="*{title}" required/>
         </div>
         <div class="form-group">
             <label>Адрес</label>
-            <input type="text" th:field="*{address}" />
+            <input type="text" th:field="*{address}" required/>
         </div>
         <div class="form-group">
             <label>Телефон</label>
-            <input type="text" th:field="*{phone}" />
+            <input type="text" th:field="*{phone}" required/>
         </div>
         <div class="form-group">
             <label>Электронная почта</label>
-            <input type="email" th:field="*{email}" />
+            <input type="email" th:field="*{email}" required/>
         </div>
         <div class="form-group">
             <label>Директор</label>
-            <input type="text" th:field="*{directorName}" />
+            <input type="text" th:field="*{directorName}" required/>
         </div>
         <button type="submit" class="button primary">Сохранить</button>
     </form>

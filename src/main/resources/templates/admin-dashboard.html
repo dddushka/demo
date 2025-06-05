@@ -23,12 +23,13 @@
 </div>
 
 <div class="container">
+
   <h1>Пользователи вашей школы</h1>
 
   <form th:action="@{/admin/dashboard}" method="get" class="search-form">
     <div class="search-group">
       <input type="text" name="search" placeholder="Поиск по логину"
-             th:value="${search}" />
+             th:value="${dashboardData.search}" />
       <button type="submit" class="button small primary">Найти</button>
     </div>
   </form>
@@ -44,7 +45,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="user : ${users}">
+    <tr th:each="user : ${dashboardData.users}">
       <td th:text="${user.id}">1</td>
       <td th:text="${user.username}">логин</td>
       <td th:text="${user.roles}">роль</td>

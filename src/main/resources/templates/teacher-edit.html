@@ -25,8 +25,12 @@
 <div class="container">
   <h1>Редактировать учителя</h1>
 
-  <form th:action="@{/teacher/edit/{teacherId}(teacherId=${teacherEditDto.teacher.id})}"
-        method="post" th:object="${teacherEditDto.teacher}">
+  <form th:action="@{/teacher/edit/{teacherId}(teacherId=${teacherEditDto.teacher.id})}" method="post" th:object="${teacherEditDto.teacher}">
+    <div th:if="${#fields.hasErrors('*')}" class="error">
+      <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+      </ul>
+    </div>
 
     <div class="form-group">
       <label for="name">ФИО:</label>
@@ -35,7 +39,7 @@
 
     <div class="form-group">
       <label>Активен:</label>
-      <select th:field="*{enabled}" class="input">
+      <select th:field="*{enabled}" class="input" required>
         <option th:value="true">Да</option>
         <option th:value="false">Нет</option>
       </select>
@@ -64,8 +68,6 @@
     <button type="submit" class="button primary">Сохранить</button>
     <a th:href="@{/teachers}" class="button secondary">Отмена</a>
   </form>
-
-
 
 </div>
 

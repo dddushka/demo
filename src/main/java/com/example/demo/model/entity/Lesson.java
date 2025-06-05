@@ -10,6 +10,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column (nullable = false)
     private String date;
 
     private String topic;
@@ -17,6 +18,6 @@ public class Lesson {
     private String homework;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id")
+    @JoinColumn(name = "schedule_id" , nullable = false)
     private Schedule schedule;
 }

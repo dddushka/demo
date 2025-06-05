@@ -10,7 +10,8 @@
 
 <div class="navbar">
     <div class="navbar-left">
-        <a th:href="@{/teacher/dashboard}">Панель учителя</a>
+        <a th:href="@{/teacher/dashboard}">Главная</a>
+        <a th:href="@{/school/info}">О школе</a>
     </div>
     <div class="navbar-right">
         <form th:action="@{/logout}" method="post" class="logout-form">
@@ -20,6 +21,10 @@
 </div>
 
 <div class="container">
+
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
 
 <h1 th:text="'Журнал по предмету: ' + ${subject.subjectName} + ' / Класс: ' + ${schoolClass.gradeLevel} + ' ' + ${schoolClass.letter}"></h1>
 
@@ -51,9 +56,9 @@
                 th:attr="data-schoolchild-id=${schoolchild.id}">
                 <td th:text="${schoolchild.name}"></td>
                 <td th:each="lesson : ${lessons}">
-                    <input type="text"
+                    <input type="number"
                            th:name="'grades[' + ${schoolchild.id} + '][' + ${lesson.id} + ']'"
-                           th:value="${grades[schoolchild.id][lesson.id]}" />
+                           th:value="${grades[schoolchild.id][lesson.id]}" min="1" max="10"/>
                 </td>
             </tr>
             </tbody>

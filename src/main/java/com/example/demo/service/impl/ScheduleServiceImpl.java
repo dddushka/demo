@@ -1,7 +1,11 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.ScheduleDto;
+import com.example.demo.dto.SchoolClassDto;
+import com.example.demo.dto.SubjectDto;
 import com.example.demo.dto.mapper.ScheduleMapper;
+import com.example.demo.dto.mapper.SchoolClassMapper;
+import com.example.demo.dto.mapper.SubjectMapper;
 import com.example.demo.model.entity.*;
 import com.example.demo.model.repository.LessonRepository;
 import com.example.demo.model.repository.ScheduleRepository;
@@ -18,6 +22,8 @@ import java.util.*;
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
+    private final SubjectMapper subjectMapper;
+    private final SchoolClassMapper schoolClassMapper;
 
     @Override
     public Optional<Schedule> findById(Integer id) {
@@ -25,17 +31,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Map<Subject, List<SchoolClass>> getSubjectsAndSchoolClassesByTeacher(Teacher teacher) {
+    public Map<SubjectDto, List<SchoolClassDto>> getSubjectsAndSchoolClassesByTeacher(Teacher teacher) {
         List<Schedule> schedules = scheduleRepository.findByTeacher(teacher);
+        Map<SubjectDto, List<SchoolClassDto>> map = new HashMap<>();
 
-        Map<Subject, List<SchoolClass>> map = new HashMap<>();
         for (Schedule schedule : schedules) {
-            Subject subject = schedule.getSubject();
-            SchoolClass schoolClass = schedule.getSchoolClass();
+            SubjectDto subjectDto = subjectMapper.toDto(schedule.getSubject());
+            SchoolClassDto schoolClassDto = schoolClassMapper.toDto(schedule.getSchoolClass());
 
-            List<SchoolClass> classes = map.computeIfAbsent(subject, k -> new ArrayList<>());
-            if (!classes.contains(schoolClass)) {
-                classes.add(schoolClass);
+            List<SchoolClassDto> schoolClassListDto = map.computeIfAbsent(subjectDto, k -> new ArrayList<>());
+            if (!schoolClassListDto.contains(schoolClassDto)) {
+                schoolClassListDto.add(schoolClassDto);
             }
         }
 
@@ -60,7 +66,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public void update(Integer id, Schedule newSchedule) {
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Занятие не найдено"));
+                .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
         schedule.setDayOfWeek(newSchedule.getDayOfWeek());
         schedule.setLessonNumber(newSchedule.getLessonNumber());

@@ -1,6 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.SchoolClassDto;
+import com.example.demo.dto.SubjectDto;
+import com.example.demo.dto.TeacherDto;
 import com.example.demo.dto.TeacherEditDto;
+import com.example.demo.dto.mapper.TeacherMapper;
 import com.example.demo.model.entity.SchoolClass;
 import com.example.demo.model.entity.Subject;
 import com.example.demo.model.entity.Teacher;
@@ -9,10 +13,12 @@ import com.example.demo.service.ScheduleService;
 import com.example.demo.service.SubjectService;
 import com.example.demo.service.TeacherService;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,17 +34,21 @@ public class TeacherController {
     private final ScheduleService scheduleService;
     private final UserService userService;
     private final SubjectService subjectService;
+    private final TeacherMapper teacherMapper;
 
     @GetMapping("/teachers")
     public String getTeachers(Model model, @AuthenticationPrincipal User user) {
         List<Teacher> teachers = teacherService.findBySchool(user.getSchool());
-        model.addAttribute("teachers", teachers);
-        model.addAttribute("newTeacher", new Teacher());
+        List<TeacherDto> teacherListDto = teacherMapper.toDtoList(teachers);
+
+        model.addAttribute("teachers", teacherListDto);
+        model.addAttribute("newTeacher", new TeacherDto());
+
         return "teachers";
     }
 
     @PostMapping("/teacher/add")
-    public String addTeacher(@ModelAttribute("newTeacher") Teacher newTeacher) {
+    public String addTeacher(@ModelAttribute("newTeacher") @Valid Teacher newTeacher) {
         //teacherService.save(newTeacher);
         return "redirect:/teachers";
     }
@@ -56,10 +66,7 @@ public class TeacherController {
 
             List<Subject> allSubjects = subjectService.findAll();
 
-            TeacherEditDto dto = new TeacherEditDto();
-            dto.setTeacher(teacher);
-            dto.setAvailableUsers(availableUsers);
-            dto.setAllSubjects(allSubjects);
+            TeacherEditDto dto = teacherMapper.toDto(teacher, availableUsers, allSubjects);
 
             model.addAttribute("teacherEditDto", dto);
             return "teacher-edit";
@@ -70,7 +77,12 @@ public class TeacherController {
 
     @PostMapping("/teacher/edit/{teacherId}")
     public String editTeacher(@PathVariable Integer teacherId,
-                              @ModelAttribute TeacherEditDto teacherEditDto) {
+                              @ModelAttribute @Valid TeacherEditDto teacherEditDto,
+                              BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "teacher-edit";
+        }
+
         Teacher teacher = teacherEditDto.getTeacher();
         teacherService.update(teacherId, teacher);
         return "redirect:/teachers";
@@ -82,8 +94,8 @@ public class TeacherController {
         if (teacherOpt.isPresent()) {
             Teacher teacher = teacherOpt.get();
 
-            Map<Subject, List<SchoolClass>> classesBySubjects = scheduleService.getSubjectsAndSchoolClassesByTeacher(teacher);
-            model.addAttribute("classesBySubjects", classesBySubjects);
+            Map<SubjectDto, List<SchoolClassDto>> classesBySubjectsDto = scheduleService.getSubjectsAndSchoolClassesByTeacher(teacher);
+            model.addAttribute("classesBySubjects", classesBySubjectsDto);
 
             return "teacher-dashboard";
         } else {

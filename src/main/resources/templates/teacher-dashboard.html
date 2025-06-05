@@ -9,7 +9,8 @@
 
 <div class="navbar">
   <div class="navbar-left">
-  <a th:href="@{/teacher/dashboard}" class="active">Панель учителя</a>
+    <a th:href="@{/teacher/dashboard}" class="active">Главная</a>
+    <a th:href="@{/school/info}">О школе</a>
   </div>
   <div class="navbar-right">
     <form th:action="@{/logout}" method="post" class="logout-form">

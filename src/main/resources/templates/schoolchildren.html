@@ -37,11 +37,17 @@
 
     <div id="addSchoolchildForm" style="display: none;">
         <form th:action="@{/schoolchild/add}" th:object="${newSchoolchildForm}" method="post">
+            <div th:if="${#fields.hasErrors('*')}" class="error">
+                <ul>
+                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+
             <input type="hidden" th:field="*{schoolClassId}" th:value="${schoolClass.id}" />
 
             <div class="form-group">
                 <label>ФИО:</label>
-                <input type="text" th:field="*{schoolchild.name}" required class="input" />
+                <input type="text" th:field="*{schoolchild.name}" class="input" required />
             </div>
 
             <div>

@@ -26,14 +26,20 @@
   <h1 th:text="${schoolClass.gradeLevel} + ${schoolClass.letter}"></h1>
 
   <form th:action="@{/schoolclass/edit/{id}(id=${schoolClass.id})}" method="post" class="form-container"  th:object="${schoolClass}">
+    <div th:if="${#fields.hasErrors('*')}" class="error">
+      <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+      </ul>
+    </div>
+
     <div class="form-group">
       <label>Цифра класса:</label>
-      <input type="text" th:field="*{gradeLevel}" />
+      <input type="text" th:field="*{gradeLevel}" min="1" max="11" required/>
     </div>
 
     <div class="form-group">
       <label>Буква класса:</label>
-      <input type="text" th:field="*{letter}" />
+      <input type="text" th:field="*{letter}" maxlength="1" required/>
     </div>
 
     <button type="submit" class="button primary">Сохранить</button>

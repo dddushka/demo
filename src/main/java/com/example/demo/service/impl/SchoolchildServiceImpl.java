@@ -46,12 +46,12 @@ public class SchoolchildServiceImpl implements SchoolchildService {
 
         if (schoolchild.getUser() != null) {
             if (!schoolchild.getUser().getRoles().contains(Role.ROLE_SCHOOLCHILD)) {
-                throw new IllegalStateException("Можно привязать только пользователя с ролью ROLE_SCHOOLCHILD");
+                throw new IllegalStateException("Can only link a user with a role ROLE_SCHOOLCHILD");
             }
 
             Optional<Schoolchild> existing = schoolchildRepository.findByUser(schoolchild.getUser());
             if (existing.isPresent() && !existing.get().getId().equals(id)) {
-                throw new IllegalStateException("Этот пользователь уже привязан к другому ученику");
+                throw new IllegalStateException("This user is already linked");
             }
         }
 

@@ -5,21 +5,12 @@ import com.example.demo.model.entity.Schedule;
 import com.example.demo.model.entity.SchoolClass;
 import com.example.demo.model.entity.Subject;
 import com.example.demo.model.entity.Teacher;
-import com.example.demo.service.SchoolClassService;
-import com.example.demo.service.SubjectService;
-import com.example.demo.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.time.DayOfWeek;
 
 @Component
-@RequiredArgsConstructor
 public class ScheduleMapper {
-
-    private final SubjectService subjectService;
-    private final TeacherService teacherService;
-    private final SchoolClassService schoolClassService;
 
     public ScheduleDto toDto(Schedule schedule) {
         ScheduleDto dto = new ScheduleDto();

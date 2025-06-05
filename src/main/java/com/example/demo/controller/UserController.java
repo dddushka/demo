@@ -1,25 +1,27 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserDto;
 import com.example.demo.dto.UserRegistrationDto;
+import com.example.demo.dto.mapper.UserMapper;
 import com.example.demo.model.entity.Role;
 import com.example.demo.model.entity.User;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import static com.example.demo.model.entity.Role.ROLE_TEACHER;
-import static com.example.demo.model.entity.Role.ROLE_USER;
 
 @Controller
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @GetMapping("/registration")
     public String getRegistrationForm(Model model) {
@@ -28,22 +30,21 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute UserRegistrationDto dto,
+    public String registration(@ModelAttribute @Valid UserRegistrationDto dto,
+                               BindingResult bindingResult,
                                Model model) {
-        Optional<User> existingUser = userService.findByUsername(dto.getUsername());
-
-        if (existingUser.isPresent()) {
-            model.addAttribute("error", "Логин уже занят");
+        if (bindingResult.hasErrors()) {
             return "registration";
         }
 
-        User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword());
-        user.setRoles(List.of(ROLE_USER));
-
-        userService.save(user);
-        return "redirect:/login";
+        try {
+            userService.register(dto);
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("user", dto);
+            return "registration";
+        }
     }
 
     @GetMapping("/login")
@@ -58,8 +59,11 @@ public class UserController {
         }
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userService.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
+        Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
+        if (userOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+        User user = userOpt.get();
 
         if (user.getRoles().contains(Role.ROLE_ADMIN)) {
             return "redirect:/admin/dashboard";
@@ -70,30 +74,34 @@ public class UserController {
         } else  if (user.getRoles().contains(Role.ROLE_USER)) {
             return "redirect:/user/dashboard";
         } else {
-            return "redirect:/error";
+            return "error";
         }
     }
 
     @GetMapping("/users/{id}")
     public String getUserById(@PathVariable Integer id, Model model) {
         Optional<User> user = userService.findById(id);
+
         if (user.isPresent()) {
-            model.addAttribute("user", user.get());
+            UserDto userDto = userMapper.toDto(user.get());
+            model.addAttribute("user", userDto);
             return "user-view";
         } else {
-            return "redirect:/error";
+            return "error";
         }
     }
 
     @GetMapping("/users/edit/{id}")
     public String editUserForm(@PathVariable Integer id, Model model) {
         Optional<User> user = userService.findById(id);
+
         if (user.isPresent()) {
-            model.addAttribute("user", user.get());
+            UserDto userDto = userMapper.toDto(user.get());
+            model.addAttribute("user", userDto);
             model.addAttribute("roles", Role.values());
             return "user-edit";
         } else {
-            return "redirect:/error";
+            return "error";
         }
     }
 

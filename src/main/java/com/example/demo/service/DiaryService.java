@@ -4,5 +4,5 @@ import com.example.demo.dto.DiaryDataDto;
 import com.example.demo.model.entity.User;
 
 public interface DiaryService {
-    DiaryDataDto getDiaryData(User user, int weekOffset);
+    DiaryDataDto getDiaryData(User user, Integer weekOffset);
 }

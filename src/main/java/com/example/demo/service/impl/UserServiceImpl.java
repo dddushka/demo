@@ -1,28 +1,25 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.entity.*;
+import com.example.demo.dto.AdminDashboardDto;
+import com.example.demo.dto.UserRegistrationDto;
+import com.example.demo.model.entity.Role;
+import com.example.demo.model.entity.School;
+import com.example.demo.model.entity.User;
 import com.example.demo.model.repository.UserRepository;
-import com.example.demo.service.SchoolchildService;
-import com.example.demo.service.TeacherService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final TeacherService teacherService;
-    private final SchoolchildService schoolchildService;
     private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
 
     @Override
     public Optional<User> findById(Integer id) {
@@ -40,9 +37,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public void register(UserRegistrationDto dto) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username is already in use");
+        }
+
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password is empty");
+        }
+
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRoles(List.of(Role.ROLE_USER));
+        userRepository.save(user);
     }
 
     @Override
@@ -78,7 +86,21 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAvailableUsersWithRole(school.getId(), Role.ROLE_TEACHER);
     }
 
+    @Override
     public List<User> findByUsername(String username, School school) {
         return userRepository.findByUsernameContainingAndSchool(username, school);
+    }
+
+    @Override
+    public AdminDashboardDto getDashboardData(String search, School school) {
+        List<User> users;
+
+        if (search != null && !search.isEmpty()) {
+            users = findByUsername(search, school);
+        } else {
+            users = findBySchool(school);
+        }
+
+        return new AdminDashboardDto(users, search);
     }
 }

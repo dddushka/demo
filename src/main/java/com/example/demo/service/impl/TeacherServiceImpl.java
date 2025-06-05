@@ -48,22 +48,22 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public void update(Integer id, Teacher teacher) {
         Teacher editingTeacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Учитель не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
 
         editingTeacher.setName(teacher.getName());
         editingTeacher.setEnabled(teacher.getEnabled());
 
         if (teacher.getUser() != null) {
             User user = userRepository.findById(teacher.getUser().getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
             if (!user.getRoles().contains(Role.ROLE_TEACHER)) {
-                throw new IllegalStateException("Можно выбрать только пользователя с ролью ROLE_TEACHER");
+                throw new IllegalStateException("Can only link a user with a role ROLE_TEACHER");
             }
 
             Optional<Teacher> existing = teacherRepository.findByUser(user);
             if (existing.isPresent() && !existing.get().getId().equals(id)) {
-                throw new IllegalStateException("Этот пользователь уже привязан к другому учителю");
+                throw new IllegalStateException("This user is already linked");
             }
 
             editingTeacher.setUser(user);

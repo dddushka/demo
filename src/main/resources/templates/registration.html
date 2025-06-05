@@ -18,13 +18,20 @@
 </div>
 
 <div class="container">
-    <h2>Регистрация</h2>
 
     <div th:if="${error}" class="error">
         <p th:text="${error}"></p>
     </div>
 
+    <h2>Регистрация</h2>
+
     <form th:action="@{/registration}" method="post" th:object="${user}" class="login-form">
+        <div th:if="${#fields.hasErrors('*')}" class="error">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
         <div class="form-group">
             <label for="username">Логин:</label>
             <input type="text" id="username" th:field="*{username}" required />

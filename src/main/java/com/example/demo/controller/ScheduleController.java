@@ -1,15 +1,22 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ScheduleDto;
+import com.example.demo.dto.SchoolClassDto;
+import com.example.demo.dto.SubjectDto;
+import com.example.demo.dto.TeacherDto;
 import com.example.demo.dto.mapper.ScheduleMapper;
+import com.example.demo.dto.mapper.SchoolClassMapper;
+import com.example.demo.dto.mapper.SubjectMapper;
+import com.example.demo.dto.mapper.TeacherMapper;
 import com.example.demo.model.entity.*;
 import com.example.demo.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.DayOfWeek;
 import java.util.*;
 
@@ -21,11 +28,15 @@ public class ScheduleController {
     private final SubjectService subjectService;
     private final TeacherService teacherService;
     private final ScheduleMapper scheduleMapper;
+    private final TeacherMapper teacherMapper;
+    private final SubjectMapper subjectMapper;
+    private final SchoolClassMapper schoolClassMapper;
 
     @GetMapping("/schedules")
     public String getSchedules(@AuthenticationPrincipal User user, Model model) {
         List<SchoolClass> schoolClasses = schoolClassService.findBySchool(user.getSchool());
-        model.addAttribute("schoolClasses", schoolClasses);
+        List<SchoolClassDto> schoolClassListDto = schoolClassMapper.toDtoList(schoolClasses);
+        model.addAttribute("schoolClasses", schoolClassListDto);
         return "schedules";
     }
 
@@ -33,19 +44,22 @@ public class ScheduleController {
     public String getSchoolClassSchedule(@PathVariable Integer schoolClassId, Model model) {
         Optional<SchoolClass> schoolClassOpt = schoolClassService.findById(schoolClassId);
         if (schoolClassOpt.isEmpty()) {
-            model.addAttribute("message", "Класс не найден");
+            model.addAttribute("message", "School class not found");
             return "error";
         }
 
         SchoolClass schoolClass = schoolClassOpt.get();
+        SchoolClassDto schoolClassDto = schoolClassMapper.toDto(schoolClass);
 
         Map<String, List<ScheduleDto>> groupedSchedules = scheduleService.getGroupedSchedulesBySchoolClass(schoolClass);
+        List<SubjectDto> subjectListDto = subjectMapper.toDtoList(subjectService.findAll());
+        List<TeacherDto> teacherListDto = teacherMapper.toDtoList(teacherService.findAll());
 
-        model.addAttribute("schoolClass", schoolClass);
+        model.addAttribute("schoolClass", schoolClassDto);
         model.addAttribute("groupedSchedules", groupedSchedules);
         model.addAttribute("scheduleForm", new ScheduleDto());
-        model.addAttribute("subjects", subjectService.findAll());
-        model.addAttribute("teachers", teacherService.findAll());
+        model.addAttribute("subjects", subjectListDto);
+        model.addAttribute("teachers", teacherListDto);
         model.addAttribute("dayOfWeek", DayOfWeek.values());
 
         return "common-schedule";
@@ -53,7 +67,11 @@ public class ScheduleController {
 
     @PostMapping("/schedule/common/{schoolClassId}/save")
     public String saveSchoolClassSchedule(@PathVariable Integer schoolClassId,
-                                          @ModelAttribute("scheduleForm") ScheduleDto scheduleDto) {
+                                          @ModelAttribute("scheduleForm") @Valid ScheduleDto scheduleDto,
+                                          BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "common-schedule";
+        }
 
         SchoolClass schoolClass = schoolClassService.findById(schoolClassId).orElseThrow();
         Subject subject = subjectService.findById(scheduleDto.getSubjectId()).orElseThrow();
@@ -71,10 +89,13 @@ public class ScheduleController {
                 .orElseThrow(() -> new RuntimeException("Занятие не найдено"));
 
         ScheduleDto dto = scheduleMapper.toDto(schedule);
+        List<SubjectDto> subjectListDto = subjectMapper.toDtoList(subjectService.findAll());
+        List<TeacherDto> teacherListDto = teacherMapper.toDtoList(teacherService.findAll());
+
         model.addAttribute("scheduleForm", dto);
         model.addAttribute("schoolClassId", schedule.getSchoolClass().getId());
-        model.addAttribute("subjects", subjectService.findAll());
-        model.addAttribute("teachers", teacherService.findAll());
+        model.addAttribute("subjects", subjectListDto);
+        model.addAttribute("teachers", teacherListDto);
         model.addAttribute("dayOfWeek", DayOfWeek.values());
 
         return "schedule-edit";
@@ -82,7 +103,12 @@ public class ScheduleController {
 
     @PostMapping("/schedule/common/{scheduleId}/edit")
     public String editSchoolClassSchedule(@PathVariable Integer scheduleId,
-                                          @ModelAttribute("scheduleForm") ScheduleDto scheduleDto) {
+                                          @ModelAttribute("scheduleForm") @Valid ScheduleDto scheduleDto,
+                                          BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "schedule-edit";
+        }
+
         Schedule existing = scheduleService.findById(scheduleId).orElseThrow(() -> new RuntimeException("Занятие не найдено"));
         SchoolClass schoolClass = existing.getSchoolClass();
 
@@ -96,8 +122,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/schedule/common/{scheduleId}/delete")
-    public String deleteSchoolClassSchedule(@PathVariable Integer scheduleId,
-                                @ModelAttribute("scheduleForm") Schedule scheduleForm) {
+    public String deleteSchoolClassSchedule(@PathVariable Integer scheduleId) {
         Schedule schedule = scheduleService.findById(scheduleId).orElseThrow(() -> new RuntimeException("Занятие не найдено"));
         SchoolClass schoolClass = schedule.getSchoolClass();
         Integer schoolClassId = schoolClass.getId();

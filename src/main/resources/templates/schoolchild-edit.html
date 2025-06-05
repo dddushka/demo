@@ -24,9 +24,14 @@
 </div>
 
 <div class="container">
-    <h1 th:text="${schoolchild.name}"></h1>
+    <h1 th:text="${schoolchildEditDto.schoolchild.name}"></h1>
 
-    <form th:action="@{/schoolchild/edit/{id}(id=${schoolchild.id})}" method="post" class="form-container"  th:object="${schoolchild}">
+    <form th:action="@{/schoolchild/edit/{id}(id=${schoolchildEditDto.schoolchild.id})}" method="post" class="form-container"  th:object="${schoolchildEditDto.schoolchild}">
+        <div th:if="${#fields.hasErrors('*')}" class="error">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
 
         <div class="form-group">
             <label>ФИО:</label>
@@ -35,8 +40,8 @@
 
         <div class="form-group">
             <label>Класс:</label>
-            <select th:field="*{schoolClasses[0]}" class="input">
-                <option th:each="cls : ${allClasses}"
+            <select th:field="*{schoolClasses[0]}" class="input" >
+                <option th:each="cls : ${schoolchildEditDto.allSchoolClasses}"
                         th:value="${cls.id}"
                         th:text="${cls.gradeLevel + cls.letter}">
                 </option>
@@ -54,7 +59,7 @@
         <div class="form-group">
             <label>Привязать к пользователю:</label>
             <select th:field="*{user}" class="input">
-                <option th:each="usr : ${allUsers}"
+                <option th:each="usr : ${schoolchildEditDto.availableUsers}"
                         th:value="${usr.id}"
                         th:text="${usr.username}">
                 </option>

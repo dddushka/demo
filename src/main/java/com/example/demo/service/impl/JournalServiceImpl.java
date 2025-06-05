@@ -1,11 +1,12 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.dto.JournalDataDto;
 import com.example.demo.dto.JournalSaveDto;
+import com.example.demo.dto.mapper.JournalMapper;
 import com.example.demo.model.entity.*;
 import com.example.demo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import java.util.*;
 
 @Service
@@ -18,9 +19,10 @@ public class JournalServiceImpl implements JournalService {
     private final ScheduleService scheduleService;
     private final GradeService gradeService;
     private final LessonService lessonService;
+    private final JournalMapper journalMapper;
 
     @Override
-    public void fillJournal(User user, Integer subjectId, Integer schoolClassId, Model model) {
+    public JournalDataDto fillJournal(User user, Integer subjectId, Integer schoolClassId) {
         Teacher teacher = teacherService.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
         Subject subject = subjectService.findById(subjectId)
@@ -43,12 +45,7 @@ public class JournalServiceImpl implements JournalService {
             }
             grades.put(schoolchild.getId(), lessonGrades);
         }
-
-        model.addAttribute("subject", subject);
-        model.addAttribute("schoolClass", schoolClass);
-        model.addAttribute("schoolchildren", schoolchildren);
-        model.addAttribute("lessons", lessons);
-        model.addAttribute("grades", grades);
+        return journalMapper.toDto(subject, schoolClass, schoolchildren, lessons, grades);
     }
 
     @Override

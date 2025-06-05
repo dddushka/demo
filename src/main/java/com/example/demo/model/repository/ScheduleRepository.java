@@ -6,7 +6,7 @@ import com.example.demo.model.entity.Subject;
 import com.example.demo.model.entity.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
-import java.util.Optional;
+
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByTeacher(Teacher teacher);

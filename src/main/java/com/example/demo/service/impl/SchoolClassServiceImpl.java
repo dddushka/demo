@@ -34,7 +34,7 @@ public class SchoolClassServiceImpl implements SchoolClassService {
     @Override
     public void update(Integer id, SchoolClass schoolClass) {
         SchoolClass editingSchoolClass = schoolClassRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Класс не найден"));
+                .orElseThrow(() -> new IllegalArgumentException("School class not found"));
 
         editingSchoolClass.setGradeLevel(schoolClass.getGradeLevel());
         editingSchoolClass.setLetter(schoolClass.getLetter());

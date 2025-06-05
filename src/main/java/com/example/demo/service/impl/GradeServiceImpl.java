@@ -17,11 +17,6 @@ public class GradeServiceImpl implements GradeService {
     private final GradeRepository gradeRepository;
 
     @Override
-    public List<Grade> findAll() {
-        return gradeRepository.findAll();
-    }
-
-    @Override
     public Optional<Grade> findByLessonAndSchoolchild(Lesson lesson, Schoolchild schoolchild) {
         return gradeRepository.findByLessonAndSchoolchild(lesson, schoolchild);
     }

@@ -26,9 +26,15 @@
   <h2>Редактировать занятие</h2>
 
   <form th:action="@{'/schedule/common/' + ${scheduleForm.id} + '/edit'}" method="post" th:object="${scheduleForm}">
+    <div th:if="${#fields.hasErrors('*')}" class="error">
+      <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+      </ul>
+    </div>
+
     <div class="form-group">
       <label for="dayOfWeek">День недели</label>
-      <select id="dayOfWeek" th:field="*{dayOfWeek}">
+      <select id="dayOfWeek" th:field="*{dayOfWeek}" required>
         <option value="">--Выберите--</option>
         <option th:each="day : ${dayOfWeek}" th:value="${day}" th:text="${day}"></option>
       </select>
@@ -36,17 +42,17 @@
 
     <div class="form-group">
       <label for="lessonNumber">Номер урока</label>
-      <input type="number" id="lessonNumber" th:field="*{lessonNumber}" min="1" />
+      <input type="number" id="lessonNumber" th:field="*{lessonNumber}" min="1" max="8" required/>
     </div>
 
     <div class="form-group">
       <label for="classroom">Кабинет</label>
-      <input type="number" id="classroom" th:field="*{classroom}" />
+      <input type="number" id="classroom" th:field="*{classroom}" min="1" required />
     </div>
 
     <div class="form-group">
       <label for="subject">Предмет</label>
-      <select id="subject" th:field="*{subjectId}">
+      <select id="subject" th:field="*{subjectId}" required >
         <option value="">--Выберите--</option>
         <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.subjectName}"></option>
       </select>
@@ -54,7 +60,7 @@
 
     <div class="form-group">
       <label for="teacher">Учитель</label>
-      <select id="teacher" th:field="*{teacherId}">
+      <select id="teacher" th:field="*{teacherId}" required >
         <option value="">--Выберите--</option>
         <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.name}"></option>
       </select>

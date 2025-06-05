@@ -17,13 +17,11 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<Role> roles;
 
     @ManyToOne
     @JoinColumn(name = "school_id")
@@ -31,6 +29,10 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private Boolean enabled = true;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

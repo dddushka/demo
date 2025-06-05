@@ -3,13 +3,11 @@ package com.example.demo.service.impl;
 import com.example.demo.model.entity.Lesson;
 import com.example.demo.model.entity.Schedule;
 import com.example.demo.model.entity.SchoolClass;
-import com.example.demo.model.entity.Teacher;
 import com.example.demo.model.repository.LessonRepository;
 import com.example.demo.model.repository.ScheduleRepository;
 import com.example.demo.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,11 +20,6 @@ import java.util.Optional;
 public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final ScheduleRepository scheduleRepository;
-
-    @Override
-    public List<Lesson> findAll() {
-        return lessonRepository.findAll();
-    }
 
     @Override
     public Optional<Lesson> findById(Integer lessonId) {

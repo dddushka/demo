@@ -1,10 +1,15 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.DiaryDataDto;
+import com.example.demo.dto.mapper.DiaryMapper;
 import com.example.demo.model.entity.*;
-import com.example.demo.service.*;
+import com.example.demo.service.DiaryService;
+import com.example.demo.service.GradeService;
+import com.example.demo.service.LessonService;
+import com.example.demo.service.SchoolchildService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,10 +21,10 @@ public class DiaryServiceImpl implements DiaryService {
     private final SchoolchildService schoolchildService;
     private final LessonService lessonService;
     private final GradeService gradeService;
+    private final DiaryMapper diaryMapper;
 
-    public DiaryDataDto getDiaryData(User user, int weekOffset) {
-        Schoolchild schoolchild = schoolchildService.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Schoolchild not found"));
+    public DiaryDataDto getDiaryData(User user, Integer weekOffset) {
+        Schoolchild schoolchild = schoolchildService.findByUser(user).orElseThrow(() -> new RuntimeException("Schoolchild not found"));
 
         List<SchoolClass> schoolClasses = schoolchild.getSchoolClasses();
         SchoolClass schoolClass = schoolClasses.get(0);
@@ -50,14 +55,6 @@ public class DiaryServiceImpl implements DiaryService {
             }
         }
 
-        DiaryDataDto diaryDataDto = new DiaryDataDto();
-        diaryDataDto.setSchoolchild(schoolchild);
-        diaryDataDto.setLessonsByDate(currentWeekLessons);
-        diaryDataDto.setGradesMap(gradesMap);
-        diaryDataDto.setWeekOffset(weekOffset);
-        diaryDataDto.setWeekStart(weekStart);
-        diaryDataDto.setWeekEnd(weekEnd);
-
-        return diaryDataDto;
+        return diaryMapper.toDto(schoolchild, currentWeekLessons, gradesMap, weekOffset, weekStart, weekEnd);
     }
 }
